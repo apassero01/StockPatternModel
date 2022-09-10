@@ -3,6 +3,7 @@ import yfinance as yf
 import pickle
 import DataCollection.Stock as Stock
 import os
+from yahoo_fin import stock_info as si
 
 class DataGrab:
     ticker  = ''
@@ -68,3 +69,40 @@ class CreateDataSet:
     def returnData(self): 
         self.readData()
         return self.AllPriceData
+
+    def getTickers(self): 
+        spticks = pd.DataFrame( si.tickers_sp500() )
+        nasticks = pd.DataFrame( si.tickers_nasdaq() )
+        dowticks = pd.DataFrame( si.tickers_dow() )
+
+        spticks = spticks[0].values.tolist()
+        nasticks = nasticks[0].values.tolist()
+        dowticks = dowticks[0].values.tolist()
+
+        allTickers = spticks + nasticks + dowticks
+        return allTickers
+
+    def clearBadTicks(self): 
+        tickersToClear = []
+        if len(self.AllPriceData) <= 0:
+            self.AllPriceData = self.readData()
+        for ticker in self.AllPriceData: 
+            if len(self.AllPriceData[ticker].priceData) == 0: 
+                tickersToClear += [ticker]
+
+        for ticker in tickersToClear: 
+            del self.AllPriceData[ticker]
+        
+        self.writeData()
+
+
+
+
+
+
+    
+
+     
+
+
+        
