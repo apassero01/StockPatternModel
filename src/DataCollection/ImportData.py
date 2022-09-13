@@ -34,12 +34,12 @@ class CreateDataSet:
     
     def writeData(self):
         if len(self.AllPriceData.keys()) > 0: 
-            with open('AllPriceData.pickle', 'wb') as f:
+            with open('PatternAnalysis/SavedData/AllPriceData.pickle', 'wb') as f:
                 pickle.dump(self.AllPriceData,f,protocol=pickle.HIGHEST_PROTOCOL)
     
     def readData(self):
-        if os.path.isfile("AllPriceData.pickle"):
-            with open('AllPriceData.pickle', 'rb') as f:
+        if os.path.isfile('PatternAnalysis/SavedData/AllPriceData.pickle'):
+            with open('PatternAnalysis/SavedData/AllPriceData.pickle', 'rb') as f:
                 try:
                     self.AllPriceData= pickle.load(f)
                 except Exception:
