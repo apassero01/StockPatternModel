@@ -6,25 +6,44 @@ import os
 from yahoo_fin import stock_info as si
 
 class DataGrab:
+    '''
+    Class to download and update data for a stocks string "ticker"
+    '''
     ticker  = ''
     lastDate = ''
     initialDataFrame = pd.DataFrame()
 
     def __init__(self, ticker): 
+        '''
+        @param ticker String of stocks "ticker" 
+        '''
         self.ticker = ticker
 
     def initialDownload(self,startDate, endDate):
+        '''
+        Downloads initial dataset from yahoo finance libray 
+        @param startDate and endDate in the form 'YYYY-MM-DD'
+        @return pandas dataframe with price data
+        '''
         initialDataFrame = yf.download(self.ticker, start = startDate, end = endDate)
         self.lastDate = endDate
         return initialDataFrame 
 
     def updateData(self, currentDate):
+        '''
+        Updates data of ticker to current date. 
+        @param current date in the form 'YYYY-MM-DD'
+        @return updated panda dataframe 
+        '''
         newDataFrame = yf.download(self.ticker, start = self.lastDate, end = currentDate)
         self.lastDate = currentDate
         return newDataFrame 
 
 
-class CreateDataSet: 
+class CreateDataSet:
+    '''
+    Class to create dataset of stocks 
+    ''' 
 
 
     def __init__(self):
@@ -33,26 +52,38 @@ class CreateDataSet:
         
     
     def writeData(self):
+        '''
+        Writes data from AllPriceData dictionary to a pickle file.
+        '''
         if len(self.AllPriceData.keys()) > 0: 
-            with open('PatternAnalysis/SavedData/AllPriceData.pickle', 'wb') as f:
+            with open('SavedData/AllPriceData.pickle', 'wb') as f:
                 pickle.dump(self.AllPriceData,f,protocol=pickle.HIGHEST_PROTOCOL)
     
     def readData(self):
-        if os.path.isfile('PatternAnalysis/SavedData/AllPriceData.pickle'):
-            with open('PatternAnalysis/SavedData/AllPriceData.pickle', 'rb') as f:
+        '''
+        Reads data from a pickle file to AllPriceData dictionary.
+        '''
+        if os.path.isfile('SavedData/AllPriceData.pickle'):
+            with open('SavedData/AllPriceData.pickle', 'rb') as f:
                 try:
                     self.AllPriceData= pickle.load(f)
                 except Exception:
                     pass
 
     
+
     def addTickers(self, tickers ):
+        '''
+        Add stock data for a list of tickers to already created dataSet
+        @param tickers a list of stock tickers
+        '''
+
         self.readData()
         for ticker in tickers:
             if ticker in self.AllPriceData.keys():
                 continue 
             else:
-                ##will need to add way to check for failed
+                ##TODO need to add way to check for failed
                 
                 newStock = Stock.StockObject(ticker) 
                 newStock.initializeData(self.startDate)
@@ -60,6 +91,9 @@ class CreateDataSet:
         self.writeData()
     
     def updateTickers(self):
+        '''
+        Updates all the tickers to current data in the pickle file. 
+        '''
         self.readData()
         for stock in self.AllPriceData: 
             self.AllPriceData[stock].updateData()
@@ -67,10 +101,17 @@ class CreateDataSet:
 
     
     def returnData(self): 
+        '''
+        @return dictionary of the price data for all stocks in data file. Key: "ticker" value: Stock object
+        '''
         self.readData()
         return self.AllPriceData
 
+
     def getTickers(self): 
+        '''
+        Generates a list of tickers from the S&P500, NASDAQ and DOW
+        '''
         spticks = pd.DataFrame( si.tickers_sp500() )
         nasticks = pd.DataFrame( si.tickers_nasdaq() )
         dowticks = pd.DataFrame( si.tickers_dow() )
@@ -83,6 +124,9 @@ class CreateDataSet:
         return allTickers
 
     def clearBadTicks(self): 
+        '''
+        Removes tickers from dataset that failed to download
+        '''
         tickersToClear = []
         if len(self.AllPriceData) <= 0:
             self.AllPriceData = self.readData()

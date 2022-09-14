@@ -1,4 +1,5 @@
 import DataCollection.ImportData as importdata
+import PriceAnalysis.Patterns as patterns
 from datetime import date
 import pandas as pd
 import yfinance as yf
@@ -8,7 +9,7 @@ class StockObject:
     ticker = ""
     relativeMin = {}
     relativeMax = {}
-    support = {}
+    support = {} 
     resistance = {}
 
 
@@ -33,6 +34,14 @@ class StockObject:
 
     def printData(self):
         print(self.priceData)
+
+    def addSuport(self,price,date):
+        if price in self.support.keys():
+            self.support[price].addTouch() 
+        else: 
+            self.support[price] = patterns.Support(price,date)
+             
+
 
 
     # def analyze(self):

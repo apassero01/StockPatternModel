@@ -11,8 +11,9 @@ def main():
     # importDataObject.addTickers(tickers)
     # theStonks = importDataObject.returnData()
     # importDataObject.clearBadTicks()
+    importDataObject.updateTickers()
+    theStonks = importDataObject.returnData()
 
-    theStonks = importDataObject.returnData(); 
     print(theStonks["tsla"].priceData)
 
 
