@@ -1,4 +1,5 @@
-import Patterns
+import PriceAnalysis.Patterns as Patterns
+from PriceAnalysis.Patterns import Price
 
 
 class FindPatterns:
@@ -8,9 +9,10 @@ class FindPatterns:
     '''
 
     #SwingChange is the percent range away from the current price that a previous high or low is considered a relitive high or low
-    SWINGCHANGE = .05
+    SWINGCHANGE = .07
     relativeHighs = []
     relativeLows = []
+    resistance = []
 
 
     def __init__(self,stock):
@@ -31,20 +33,34 @@ class FindPatterns:
         Method to loop over a stocks panda dataset containing relavent price data checking for patterns. 
         '''
 
-        relMax = 0
-        relmin = 0
+        relMax = Patterns.Price(0)
+        relmin = Patterns.Price(0)
 
         for index, period in self.priceData.iterrows(): 
             periodHigh = period["High"]
             periodLow = period["Low"]
-            date = period["Date"]
+            date = period.name
+
+            periodHigh = Patterns.Price(periodHigh,date)
+            periodLow = Patterns.Price(periodLow,date)
+            closestResistance = self.getClosestResistance(periodHigh)
 
             if periodHigh > relMax: 
-                relMax = periodHigh 
+                relMax = periodHigh
+                relMax.setDate(date)
             
             #Considered far enough away from previus high to consider price a relative high 
-            if periodHigh < relMax+relMax*self.SWINGCHANGE: 
+            if periodLow.price < relMax.price-relMax.price*self.SWINGCHANGE: 
                 self.addRelativeHigh(relMax,date)
+                relMax = periodHigh
+            if periodHigh == closestResistance.price:
+                closestResistance.addTouch(date)
+            
+            
+
+        
+
+           
 
 
     def addRelativeHigh(self,relMax,date):
@@ -53,16 +69,35 @@ class FindPatterns:
         If it already exists in the list relative high is removed and a resistance
         object is istantiated at that price. 
         '''
-        relMax = Patterns.Price(relMax,date)
         
         if (relMax in self.relativeHighs):
+            ##Figure out why irs making relMax and repeatMax the same shit 
             repeatMax = self.relativeHighs[self.relativeHighs.index(relMax)]
-            newResistance = Patterns.Resistance(relMax,date)
+            newResistance = Patterns.PriceLevels(relMax,relMax.date)
             newResistance.addDate(repeatMax.date)
             self.relativeHighs.remove(relMax)
-            self.resistance += [newResistance]
+            if (newResistance not in self.resistance): 
+                self.resistance += [newResistance]
         else: 
             self.relativeHighs += [relMax]
+    
+
+    def getClosestResistance(self,price):
+        difference = price; 
+        closestIndex = 0; 
+
+        if len(self.resistance) == 0:
+            
+            return Patterns.PriceLevels(Patterns.Price(0),'01-01-2001')
+        
+        for index,curResistance in enumerate(self.resistance): 
+            if abs(price-curResistance.price) < difference: 
+                difference = abs(price-curResistance.price)
+                closestIndex = index 
+        
+        return self.resistance[closestIndex]
+        
+        
 
         
         

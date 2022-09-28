@@ -5,16 +5,15 @@ class Price:
     EPSILON = .01
 
     
-    def __init__(self,price,date): 
+    def __init__(self,price,date = None): 
         '''
         @param price A numeric price value
-        @param date The date at which the stock traded at this price
         '''
         self.price = price 
         self.date = date
     
 
-    def addDate(self,date):
+    def setDate(self,date):
         '''
         Add date value to list for multiple occurances of self price
         '''
@@ -29,9 +28,32 @@ class Price:
             return True
         else:
             return False
+    
+    def __sub__(self,other):
+        return Price(self.price - other.price)
+    
+    def __add__(self,other):
+        return Price(self.price + other.price)
+
+
+    def __gt__(self,other):
+        return (self.price > other.price)
+    
+    def __lt__(self,other):
+        return (self.price < other.price)
+
+    def __repr__(self):
+        return str(self.price)
+    
+    def __abs__(self):
+        if self.price > 0: 
+            return Price(self.price)
+        else:
+            return Price(self.price*-1)
         
 
-class Support: 
+
+class PriceLevels: 
     
     def __init__(self,price, date):
         self.price = price 
@@ -43,22 +65,19 @@ class Support:
         self.touches += 1
     
     def addDate(self,date):
-        self.date += [date]
+        self.dates += [date]
 
+    
+    def __eq__(self,other):
+        return self.price == other.price
 
-class Resistance: 
-    
-    def __init__(self,price, date):
-        self.price = price 
-        self.dates = [date]
-        self.touches = 2
-    
-    def addTouch(self,date):
-        self.dates+=[date]
-        self.touches += 1
-    
-    def addDate(self,date):
-        self.date += [date]
+    def __repr__(self):
+        resisString = str(self.price) + " "
+        resisString += str(self.touches)
+        # for date in self.dates:
+        #     resisString += date.strftime("%Y-%m-%d") + " "
+        return resisString
+
 
 
 

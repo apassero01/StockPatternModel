@@ -7,10 +7,11 @@ import pickle
 
 class StockObject: 
     ticker = ""
-    relativeMin = {}
-    relativeMax = {}
-    support = {} 
-    resistance = {}
+    relativeMin = []
+    relativeMax = []
+    support = []
+    resistance = []
+
 
 
     def __init__(self, ticker):
