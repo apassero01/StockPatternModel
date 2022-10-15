@@ -1,0 +1,2 @@
+# StockPattern Predictive Model
+This program is a work in progress with the goal of using historical stock data to identify patterns and analyze the statistics related to these patterns in order to make a predictive model. There is currently no way to run this program as it is a work in progress. The directory DataCollection is the first step of this process to easily download and work with historical stock data. 

@@ -55,25 +55,41 @@ class Price:
 
 class PriceLevels: 
     
-    def __init__(self,price, date):
+    def __init__(self,levelType, price, date):
         self.price = price 
-        self.dates = [date]
-        self.touches = 2
+        if levelType == "support":
+            self.supportDates = [date]
+            self.resistanceDates = []
+            self.supportTouches = 2; 
+            self.resistanceTouches = 0; 
+        else: 
+            self.support = []
+            self.resistanceDates = [date]
+            self.supportTouches = 0
+            self.resistanceTouches = 2 
     
-    def addTouch(self,date):
-        self.dates+=[date]
-        self.touches += 1
+    def addResisTouch(self,date):
+        self.resistanceDates+=[date]
+        self.resistanceTouches += 1
     
-    def addDate(self,date):
-        self.dates += [date]
+    def addSupportTouch(self,date):
+        self.supportDates+=[date]
+        self.supportTouches += 1
+    
+    def addDate(self,levelType, date,):
+        if levelType == "support":
+            self.supportDates += [date]
+        else:
+            self.resistanceDates += [date]
 
     
     def __eq__(self,other):
         return self.price == other.price
 
     def __repr__(self):
+        ##TODO update repr for support and resistance 
         resisString = str(self.price) + " "
-        resisString += str(self.touches)
+        resisString += str(self.resistanceTouches)
         # for date in self.dates:
         #     resisString += date.strftime("%Y-%m-%d") + " "
         return resisString

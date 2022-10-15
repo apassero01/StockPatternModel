@@ -8,7 +8,7 @@ import PriceAnalysis.FindPatterns as Patterns
 
 
 def main(): 
-    # importDataObject = ImportData.CreateDataSet()
+    importDataObject = ImportData.CreateDataSet()
     
     # tickers = importDataObject.getTickers()
     # importDataObject.addTickers(tickers)
@@ -16,10 +16,20 @@ def main():
     # importDataObject.clearBadTicks()
    
     # importDataObject.updateTickers()
-    # theStonks = importDataObject.returnData()
+    stockList = importDataObject.returnData()
+    stock1 = stockList.get("tsla")
+
+    print("The length of the stock list is ", len(stockList))
+    print("The amount of price data points for each stock is ", len(stock1.priceData))
+
+    print(stock1.priceData)
+
+
+    
+
 
     # print(theStonks["tsla"].priceData)
-    testOneStock("aapl")
+    # testOneStock("aapl")
 
 
 def testOneStock(stock):
@@ -29,8 +39,8 @@ def testOneStock(stock):
     patternFinder = Patterns.FindPatterns(stockobj)
     patternFinder.analyzePriceData()
 
-    for resistance in patternFinder.resistance:
-        print(resistance)
+    for levels in patternFinder.levels:
+        print(levels)
     
 
 

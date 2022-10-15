@@ -10,7 +10,7 @@ class StockObject:
     relativeMin = []
     relativeMax = []
     support = []
-    resistance = []
+    levels = []
 
 
 
