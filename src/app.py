@@ -13,7 +13,7 @@ def createApp(stockDict):
 
     app = Dash(__name__)
     mytitle = dcc.Markdown(children='Chart With Generated Support and Resistance Levels',style = {'font-size': 29,'text-align':CENTER})
-    descript = dcc.Markdown(children= 'Display generated support and resistance levels for'
+    descript = dcc.Markdown(children= 'Display generated support and resistance levels for '
      'each stock in the drop down menu. Currently the view is a work in progress make use of the zoom feature '
      'to zoom to any "box" you select on the chart. Additionally old support and resistance lines clutter'
      'the current view but will be updated.')
