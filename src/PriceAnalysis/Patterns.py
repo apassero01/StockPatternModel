@@ -93,19 +93,8 @@ class PriceLevels:
         # for date in self.dates:
         #     resisString += date.strftime("%Y-%m-%d") + " "
         return resisString
+    
+    def getTotalTouches(self):
+        return self.resistanceTouches + self.supportTouches
 
 
-
-
-
-# def main(): 
-#     price1 = Price(99)
-#     price2 = Price(100)
-#     price3 = Price(500); 
-#     price4 = Price(501); 
-#     price5 = Price(29.5)
-
-#     lsit = [price1, price2, price3]
-#     print(lsit.index(price5) )
-
-# main()

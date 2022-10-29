@@ -51,13 +51,13 @@ class CreateDataSet:
         self.startDate = '2001-01-01'
         
     
-    def writeData(self):
+    def writeData(self,stockDict):
         '''
         Writes data from AllPriceData dictionary to a pickle file.
         '''
-        if len(self.AllPriceData.keys()) > 0: 
+        if len(stockDict.keys()) > 0: 
             with open('SavedData/AllPriceData.pickle', 'wb') as f:
-                pickle.dump(self.AllPriceData,f,protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump(stockDict,f,protocol=pickle.HIGHEST_PROTOCOL)
     
     def readData(self):
         '''
@@ -72,14 +72,14 @@ class CreateDataSet:
 
     
 
-    def addTickers(self, tickers ):
+    def addTickers(self, tickers):
         '''
         Add stock data for a list of tickers to already created dataSet
         @param tickers a list of stock tickers
         '''
 
         self.readData()
-        for ticker in tickers:
+        for ticker in tickers[0:10]:
             if ticker in self.AllPriceData.keys():
                 continue 
             else:
@@ -88,7 +88,7 @@ class CreateDataSet:
                 newStock = Stock.StockObject(ticker) 
                 newStock.initializeData(self.startDate)
                 self.AllPriceData[ticker] = newStock
-        self.writeData()
+        self.writeData(self.AllPriceData)
     
     def updateTickers(self):
         '''
@@ -108,19 +108,19 @@ class CreateDataSet:
         return self.AllPriceData
 
 
-    def getTickers(self): 
+    def generateTickers(self): 
         '''
         Generates a list of tickers from the S&P500, NASDAQ and DOW
         '''
         spticks = pd.DataFrame( si.tickers_sp500() )
-        nasticks = pd.DataFrame( si.tickers_nasdaq() )
-        dowticks = pd.DataFrame( si.tickers_dow() )
+        # nasticks = pd.DataFrame( si.tickers_nasdaq() )
+        # dowticks = pd.DataFrame( si.tickers_dow() )
 
         spticks = spticks[0].values.tolist()
-        nasticks = nasticks[0].values.tolist()
-        dowticks = dowticks[0].values.tolist()
+        # nasticks = nasticks[0].values.tolist()
+        # dowticks = dowticks[0].values.tolist()
 
-        allTickers = spticks + nasticks + dowticks
+        allTickers = spticks
         return allTickers
 
     def clearBadTicks(self): 
@@ -131,13 +131,14 @@ class CreateDataSet:
         if len(self.AllPriceData) <= 0:
             self.AllPriceData = self.readData()
         for ticker in self.AllPriceData: 
-            if len(self.AllPriceData[ticker].priceData) == 0: 
+            currentStock = self.AllPriceData.get(ticker)
+            if len(currentStock.priceData) == 0: 
                 tickersToClear += [ticker]
 
         for ticker in tickersToClear: 
             del self.AllPriceData[ticker]
         
-        self.writeData()
+        self.writeData(self.AllPriceData)
 
 
 

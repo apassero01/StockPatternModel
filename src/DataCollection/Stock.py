@@ -5,6 +5,10 @@ import pandas as pd
 import yfinance as yf
 import pickle
 
+'''
+Class encapsulates a stock object. Each stock object will contain its 
+own price data, with varius technical statistics 
+'''
 class StockObject: 
     ticker = ""
     relativeMin = []
@@ -14,14 +18,25 @@ class StockObject:
 
 
 
+    '''
+    Initialize a stock object with a ticker. An instance 
+    of the class "DataGrab" is also created to be used for 
+    downloading price data. 
+    '''
     def __init__(self, ticker):
         self.ticker = ticker
         self.dataGrab = importdata.DataGrab(ticker)
     
+    '''
+    Download all up to current date and store in self.priceData
+    '''
     def initializeData(self, startDate): 
         self.updateCurrentDate()
         self.priceData = self.dataGrab.initialDownload( startDate, self.currentDate )
 
+    '''
+    For stock that already contains priceData, update that data to currentDate 
+    '''
     def updateData(self):
         self.updateCurrentDate()
         updatedPriceDate = self.dataGrab.updateData(self.currentDate)
@@ -29,43 +44,20 @@ class StockObject:
         self.priceData = pd.concat(frames)
 
     
+    '''
+    Update the current date 
+    '''
     def updateCurrentDate(self):
         self.currentDate = date.today()
         self.currentDate = self.currentDate.strftime("%Y-%m-%d")
 
+    '''
+    output the priceData to the console 
+    '''
     def printData(self):
         print(self.priceData)
+    
+    def getLevels(self):
+        return self.levels
 
-    def addSuport(self,price,date):
-        if price in self.support.keys():
-            self.support[price].addTouch() 
-        else: 
-            self.support[price] = patterns.Support(price,date)
              
-
-
-
-    # def analyze(self):
-    #     upTrend = True
-    #     for index, row in self.priceData.iterrows: 
-    #         print("hello")
-
-    # def getMovingAverage(self, period): 
-    #     self.movingAverage50 += period; 
-
-# def main():
-#     ticker = "aapl"
-#     startDate = '2001-01-01'
-#     endDate = '2021-01-01' 
-#     apple = Stock(ticker)
-#     apple.initializeData(startDate)
-#     apple.updateData()
-#     ticker2 = "tsla"
-#     tsla = Stock(ticker2)
-#     tsla.initializeData(startDate)
-#     tsla.updateData()
-#     with open('data2.pickle', 'wb') as f:
-#         pickle.dump([apple, tsla],f) 
-
-
-# main()
