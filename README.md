@@ -20,3 +20,4 @@ Once Patterns begin to be identified with high accuracy, algorithms to statistic
 
 
 ## Example image of AAPL support and resistance in application 
+![Screen Shot 2022-10-29 at 11 03 20 AM](https://user-images.githubusercontent.com/103969321/198839083-0d85784d-0d32-44be-bae9-a6658db6a041.png)
