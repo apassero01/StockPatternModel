@@ -26,6 +26,7 @@ class StockObject:
     def __init__(self, ticker):
         self.ticker = ticker
         self.dataGrab = importdata.DataGrab(ticker)
+        
     
     '''
     Download all up to current date and store in self.priceData
@@ -59,5 +60,3 @@ class StockObject:
     
     def getLevels(self):
         return self.levels
-
-             

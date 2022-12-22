@@ -1,5 +1,7 @@
 import PriceAnalysis.Patterns as Patterns
 from PriceAnalysis.Patterns import Price
+import PriceAnalysis.PatternContainers as containers
+import pandas as pd 
 
 
 class FindPatterns:
@@ -10,6 +12,7 @@ class FindPatterns:
 
     #SwingChange is the percent range away from the current price that a previous high or low is considered a relitive high or low
     SWINGCHANGE = .07
+    GAPSIZEPERCENT = .07 
 
 
 
@@ -26,6 +29,9 @@ class FindPatterns:
         self.support = self.curStock.support
         self.relativeHighs = []
         self.relativeLows = []
+        self.gapContainer = containers.GapContainer()  
+
+
     
 
     def analyzePriceData(self):
@@ -37,15 +43,27 @@ class FindPatterns:
         relMax = Patterns.Price(0)
         relmin = Patterns.Price(0)
 
+        prevPeriod = pd.DataFrame() 
+
         for index, period in self.priceData.iterrows(): 
             
             periodHigh = period["High"]
             periodLow = period["Low"]
+            periodOpen = period["Open"]
+            periodClose = period["Close"]
             date = period.name
             
+        
 
             periodHigh = Patterns.Price(periodHigh,date)
             periodLow = Patterns.Price(periodLow,date)
+            periodOpen = Patterns.Price(periodClose,date)
+
+            if not prevPeriod.empty:
+                self.checkForGap(periodOpen,Patterns.Price(prevPeriod["Close"],prevPeriod.name))
+            self.gapContainer.analyzeGaps(periodHigh) 
+
+
             # self.currentLevels += [Patterns.PriceLevels("resistance",periodHigh,date)]
             closestlevels = self.getClosestlevels(periodHigh)
 
@@ -61,11 +79,22 @@ class FindPatterns:
                 ##TODO check for both support and resistance 
                 closestlevels.addResisTouch(date)
             
+
+            #End of each day store date to be accessed at the next date
+            prevPeriod = period 
             
 
         
 
            
+    def checkForGap(self,periodOpen,prevClose):
+        percentChange = ((periodOpen - prevClose)/prevClose).price
+        if abs(percentChange) < self.GAPSIZEPERCENT:
+            return
+        self.gapContainer.addGap(periodOpen,prevClose,percentChange)
+
+        
+
 
 
     def addRelativeHigh(self,relMax,date):

@@ -48,7 +48,7 @@ def analyzeStocks(stockDict):
     stockDictCopy = stockDict.copy()
     for stock in stockDict.keys():
         if len(stockDict[stock].levels) > 0:
-            return stockDict
+            continue
 
         patternFinder = Patterns.FindPatterns(stockDict.get(stock))
         patternFinder.analyzePriceData()
@@ -58,6 +58,13 @@ def analyzeStocks(stockDict):
 
     return stockDictCopy
 
+#main() 
 
+def gapTest(): 
+    testStock = Stock.StockObject("LUMN")
+    testStock.initializeData('2022-01-01')
+    PatternFinder = Patterns.FindPatterns(testStock)
+    PatternFinder.analyzePriceData()
+    print(PatternFinder.gapContainer.archivedGaps)
 
-main()
+gapTest()
