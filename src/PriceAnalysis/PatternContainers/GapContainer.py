@@ -1,5 +1,5 @@
 import bisect 
-from PriceAnalysis.Patterns import GapBelow,GapAbove
+from PriceAnalysis.Patterns.GapPattern import GapBelow,GapAbove
 
 '''
 Class with functionality to store all gap instances for a specific stock.
@@ -36,36 +36,36 @@ class GapContainer:
     '''
     Method for analzying all exisiting gaps given the current price. 
     '''    
-    def analyzeGaps(self,currentPrice): 
+    def analyzeGaps(self,candle): 
 
 
         ##Analyze active gaps above and check for closest gapAbove
         if self.activeGapAbove != None: 
-            self.activeGapAbove.updateGap(currentPrice)
+            self.activeGapAbove.updateGap(candle)
             if self.activeGapAbove.filled == True:
                 self.gapsAbove.remove(self.activeGapAbove)
-                self.activeGapAbove == None
+                self.activeGapAbove = None
             if not self.activeGapAbove.inside:
-                self.activeGapAbove == None
+                self.activeGapAbove = None
 
-        if len(self.gapsAbove) > 0:
+        if len(self.gapsAbove) > 0 and self.activeGapAbove == None:
             self.closestAbove = self.gapsAbove[0]
-            self.closestAbove.updateGap(currentPrice)
+            self.closestAbove.updateGap(candle)
             if self.closestAbove.inside: 
                 self.activeGapAbove = self.closestAbove
 
         ##Analyze active gaps below and check for closest gapBelow
         if self.activeGapBelow != None: 
-            self.activeGapBelow.updateGap(currentPrice)
+            self.activeGapBelow.updateGap(candle)
             if self.activeGapBelow.filled == True:
                 self.gapsBelow.remove(self.activeGapBelow)
-                self.activeGapBelow == None
+                self.activeGapBelow = None
             if not self.activeGapBelow.inside:
-                self.activeGapBelow == None
+                self.activeGapBelow = None
         
-        if len(self.gapsBelow) > 0 :
+        if len(self.gapsBelow) > 0 and self.activeGapBelow == None:
             self.closestBelow = self.gapsBelow[0]
-            self.closestBelow.updateGap(currentPrice)
+            self.closestBelow.updateGap(candle)
             if self.closestBelow.inside: 
                 self.activeGapBelow = self.closestBelow
 

@@ -1,6 +1,5 @@
-import PriceAnalysis.Patterns as Patterns
-from PriceAnalysis.Patterns import Price
-import PriceAnalysis.PatternContainers as containers
+import PriceAnalysis.Patterns.Patterns as Patterns
+import PriceAnalysis.PatternContainers.GapContainer as gapContainer
 import pandas as pd 
 
 
@@ -29,7 +28,7 @@ class FindPatterns:
         self.support = self.curStock.support
         self.relativeHighs = []
         self.relativeLows = []
-        self.gapContainer = containers.GapContainer()  
+        self.gapContainer = gapContainer.GapContainer()  
 
 
     
@@ -52,17 +51,20 @@ class FindPatterns:
             periodOpen = period["Open"]
             periodClose = period["Close"]
             date = period.name
+
             
         
 
             periodHigh = Patterns.Price(periodHigh,date)
             periodLow = Patterns.Price(periodLow,date)
-            periodOpen = Patterns.Price(periodClose,date)
+            periodOpen = Patterns.Price(periodOpen,date)
+            periodClose = Patterns.Price(periodClose,date)
+
+            candle = Patterns.Candle(periodOpen,periodClose,periodHigh,periodLow,date)
 
             if not prevPeriod.empty:
                 self.checkForGap(periodOpen,Patterns.Price(prevPeriod["Close"],prevPeriod.name))
-            self.gapContainer.analyzeGaps(periodHigh) 
-
+            self.gapContainer.analyzeGaps(candle) 
 
             # self.currentLevels += [Patterns.PriceLevels("resistance",periodHigh,date)]
             closestlevels = self.getClosestlevels(periodHigh)
