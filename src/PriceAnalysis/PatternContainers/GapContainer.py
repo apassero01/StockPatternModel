@@ -40,34 +40,24 @@ class GapContainer:
 
 
         ##Analyze active gaps above and check for closest gapAbove
-        if self.activeGapAbove != None: 
-            self.activeGapAbove.updateGap(candle)
-            if self.activeGapAbove.filled == True:
-                self.gapsAbove.remove(self.activeGapAbove)
-                self.activeGapAbove = None
-            if not self.activeGapAbove.inside:
-                self.activeGapAbove = None
 
-        if len(self.gapsAbove) > 0 and self.activeGapAbove == None:
+        if len(self.gapsAbove) > 0:
             self.closestAbove = self.gapsAbove[0]
             self.closestAbove.updateGap(candle)
             if self.closestAbove.inside: 
-                self.activeGapAbove = self.closestAbove
+                if self.closestAbove.filled: 
+                    self.gapsAbove.remove(self.closestAbove)
+                    self.closestAbove = None
 
         ##Analyze active gaps below and check for closest gapBelow
-        if self.activeGapBelow != None: 
-            self.activeGapBelow.updateGap(candle)
-            if self.activeGapBelow.filled == True:
-                self.gapsBelow.remove(self.activeGapBelow)
-                self.activeGapBelow = None
-            if not self.activeGapBelow.inside:
-                self.activeGapBelow = None
         
-        if len(self.gapsBelow) > 0 and self.activeGapBelow == None:
+        if len(self.gapsBelow) > 0:
             self.closestBelow = self.gapsBelow[0]
             self.closestBelow.updateGap(candle)
             if self.closestBelow.inside: 
-                self.activeGapBelow = self.closestBelow
+                if self.closestBelow.filled: 
+                    self.gapsBelow.remove(self.closestBelow)
+                    self.closestBelow = None
 
 
         

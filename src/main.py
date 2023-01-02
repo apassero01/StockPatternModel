@@ -62,7 +62,8 @@ def analyzeStocks(stockDict):
 
 def gapTest(): 
     testStock = Stock.StockObject("LUMN")
-    testStock.initializeData('2022-01-01')
+    # testStock.initializeDataInRange('2020-03-11','2020-03-24')
+    testStock.initializeData('2016-01-01')
     PatternFinder = Patterns.FindPatterns(testStock)
     PatternFinder.analyzePriceData()
     print(PatternFinder.gapContainer.archivedGaps)

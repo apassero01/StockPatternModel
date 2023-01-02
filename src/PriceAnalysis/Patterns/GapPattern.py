@@ -31,6 +31,8 @@ class GapAbove:
 
             if self.currentFill.percentFilled > self.totalFillPercent: 
                 self.filled = True
+                self.fillInstances.append(self.currentFill)
+                self.currentFill = None
             
         else: 
             if self.inside: 
@@ -54,7 +56,7 @@ class GapAbove:
     def __repr__(self):
         s = "\nGap Above \n"
         s+="Date: " + self.top.date.strftime("%m/%d/%Y") + "\n"
-        s+= "Size: " + str(self.totalFillPercent*100)+"%\n"
+        s+= "Size: " + str(round(self.totalFillPercent*100,2))+"%\n"
         s+="List of Percent Fill Instances: "+ str(self.fillInstances)+"\n"
         s+="Bottom = " + str(self.bottom) + " Top = " + str(self.top) + "\n"
         return s
@@ -71,6 +73,7 @@ class GapBelow:
         self.inside = False 
         self.filled = False
         self.fillInstances = [] 
+        self.currentFill = None
         self.totalFillPercent = ((self.top-self.bottom)/self.top).price
 
     '''
@@ -90,6 +93,8 @@ class GapBelow:
 
             if self.currentFill.percentFilled > self.totalFillPercent: 
                 self.filled = True
+                self.fillInstances.append(self.currentFill)
+                self.currentFill = None
         else: 
             if self.inside: 
                 self.currentFill.updateFill(candle)
@@ -110,7 +115,7 @@ class GapBelow:
     def __repr__(self):
         s = "\nGap Below \n"
         s+="Date: " + self.bottom.date.strftime("%m/%d/%Y") + "\n"
-        s+= "Size: " + str(self.totalFillPercent*100)+"%\n"
+        s+= "Size: " + str(round(self.totalFillPercent*100,2))+"%\n"
         s+="List of Percent Fill Instances: "+ str(self.fillInstances)+"\n"
         s+="Bottom = " + str(self.bottom) + " Top = " + str(self.top) + "\n"
         return s
@@ -157,6 +162,8 @@ class GapAboveFill:
         tempFill = (((candle.high-self.bottom)/self.bottom)).price
         self.percentFilled = max(tempFill,self.percentFilled)
         self.percentOutside = max(self.percentOutside,(((self.bottom-candle.low)/self.bottom)).price)
+        self.highestPercentFilled = self.percentFilled/self.totalFillPercent
+        self.highestPercentFilled = min(self.highestPercentFilled,1)
 
         if candle.close > self.bottom: 
             self.daysInside = self.daysInside+1
@@ -164,13 +171,13 @@ class GapAboveFill:
         else: 
             if self.activeAtRisk: 
                 self.active = False
-                self.highestPercentFilled = round(self.percentFilled/self.totalFillPercent,4)
-                self.highestPercentFilled = min(self.highestPercentFilled,1)
             else: 
                 self.activeAtRisk = True
 
     def __repr__(self): 
-        s = str(self.highestPercentFilled*100)
+        s = str(round(self.highestPercentFilled*100,4)) + "% Filled "
+        # s += "days " + str(self.daysInside)
+        # s += "\nLargest Move Out: " + str(self.percentOutside) + "% \n"
         return s        
 
 class GapBelowFill: 
@@ -211,6 +218,8 @@ class GapBelowFill:
         tempFill = (((self.top-candle.low)/self.top)).price
         self.percentFilled = max(tempFill,self.percentFilled)
         self.percentOutside = max(self.percentOutside,(((candle.high-self.top)/self.top)).price)
+        self.highestPercentFilled = self.percentFilled/self.totalFillPercent
+        self.highestPercentFilled = min(self.highestPercentFilled,1)
 
         if candle.close < self.top: 
             self.daysInside = self.daysInside+1
@@ -219,12 +228,13 @@ class GapBelowFill:
         
             if self.activeAtRisk: 
                 self.active = False
-                self.highestPercentFilled = round(self.percentFilled/self.totalFillPercent,4)
-                self.highestPercentFilled = min(self.highestPercentFilled,1)
+                
             else: 
                 self.activeAtRisk = True
     
     def __repr__(self): 
-        s = str(self.highestPercentFilled*100)
-        return s
+        s = str(round(self.highestPercentFilled*100,4)) + "% Filled "
+        # s += "days " + str(self.daysInside) 
+        # s += "\nLargest Move Out: " + str(self.percentOutside) + "% \n"
+        return s  
 

@@ -52,6 +52,10 @@ class StockObject:
         self.currentDate = date.today()
         self.currentDate = self.currentDate.strftime("%Y-%m-%d")
 
+
+    def initializeDataInRange(self,startDate, endDate):
+        self.priceData = self.dataGrab.initialDownload(startDate,endDate)
+
     '''
     output the priceData to the console 
     '''
