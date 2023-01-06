@@ -28,7 +28,7 @@ class FindPatterns:
         self.support = self.curStock.support
         self.relativeHighs = []
         self.relativeLows = []
-        self.gapContainer = gapContainer.GapContainer()  
+        self.gapContainer = gapContainer.GapContainer(Patterns.Price(0),Patterns.Price(100000))  
 
 
     
@@ -66,20 +66,20 @@ class FindPatterns:
                 self.checkForGap(periodOpen,Patterns.Price(prevPeriod["Close"],prevPeriod.name))
             self.gapContainer.analyzeGaps(candle) 
 
-            # self.currentLevels += [Patterns.PriceLevels("resistance",periodHigh,date)]
-            closestlevels = self.getClosestlevels(periodHigh)
+            # # self.currentLevels += [Patterns.PriceLevels("resistance",periodHigh,date)]
+            # closestlevels = self.getClosestlevels(periodHigh)
 
-            if periodHigh > relMax: 
-                relMax = periodHigh
-                relMax.setDate(date)
+            # if periodHigh > relMax: 
+            #     relMax = periodHigh
+            #     relMax.setDate(date)
             
-            #Considered far enough away from previus high to consider price a relative high 
-            if periodLow.price < relMax.price-relMax.price*self.SWINGCHANGE: 
-                self.addRelativeHigh(relMax,date)
-                relMax = periodHigh
-            if periodHigh == closestlevels.price:
-                ##TODO check for both support and resistance 
-                closestlevels.addResisTouch(date)
+            # #Considered far enough away from previus high to consider price a relative high 
+            # if periodLow.price < relMax.price-relMax.price*self.SWINGCHANGE: 
+            #     self.addRelativeHigh(relMax,date)
+            #     relMax = periodHigh
+            # if periodHigh == closestlevels.price:
+            #     ##TODO check for both support and resistance 
+            #     closestlevels.addResisTouch(date)
             
 
             #End of each day store date to be accessed at the next date

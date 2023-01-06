@@ -24,7 +24,7 @@ def main():
 
     importDataObject.writeData(stockDict)
 
-    app.createApp(stockDict)
+    # app.createApp(stockDict)
 
 '''
 Initialize the dataset. The importData classes are set up 
@@ -47,9 +47,6 @@ def analyzeStocks(stockDict):
     
     stockDictCopy = stockDict.copy()
     for stock in stockDict.keys():
-        if len(stockDict[stock].levels) > 0:
-            continue
-
         patternFinder = Patterns.FindPatterns(stockDict.get(stock))
         patternFinder.analyzePriceData()
         stockDictCopy[stock] = patternFinder.returnStock()
@@ -58,14 +55,14 @@ def analyzeStocks(stockDict):
 
     return stockDictCopy
 
-#main() 
+main() 
 
 def gapTest(): 
     testStock = Stock.StockObject("LUMN")
-    # testStock.initializeDataInRange('2020-03-11','2020-03-24')
-    testStock.initializeData('2016-01-01')
+    # testStock.initializeDataInRange('2022-02-08','2022-05-31')
+    testStock.initializeData('2000-01-01')
     PatternFinder = Patterns.FindPatterns(testStock)
     PatternFinder.analyzePriceData()
     print(PatternFinder.gapContainer.archivedGaps)
 
-gapTest()
+# gapTest()
