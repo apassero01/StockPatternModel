@@ -14,6 +14,7 @@ class GapAbove:
         self.currentFill = None
         self.totalFillPercent = ((self.top-self.bottom)/self.bottom).price
         self.newFill = False 
+        self.below = False
 
     '''
     Method for updating the currentGap to the most recent price. 
@@ -83,6 +84,7 @@ class GapBelow:
         self.currentFill = None
         self.totalFillPercent = ((self.top-self.bottom)/self.top).price
         self.newFill = False 
+        self.below = True
 
     '''
     Method for updating the currentGap to the most recent price. 
@@ -117,7 +119,7 @@ class GapBelow:
     
     def setNewMax(self,maxPrice):
         lastFill = self.fillInstances[-1]
-        lastFill.minAfterExit = max(lastFill.maxAfterExit,maxPrice) 
+        lastFill.maxAfterExit = max(lastFill.maxAfterExit,maxPrice) 
 
     def __eq__(self,other): 
         if isinstance(other,GapBelow):
@@ -170,6 +172,7 @@ class GapAboveFill:
         self.entryDate = entryPrice.date
         self.latestDate = entryPrice.date
         self.highestPercentFilled = 0
+        self.farthestPrice = bottom
     
 
     def updateFill(self,candle):
@@ -180,7 +183,7 @@ class GapAboveFill:
 
         self.highestPercentFilled = self.percentFilled/self.totalFillPercent
         self.highestPercentFilled = min(self.highestPercentFilled,1)
-
+        self.farthestPrice = max(self.farthestPrice,candle.high)
         if candle.close > self.bottom: 
             self.daysInside = self.daysInside+1
             self.percentOutside = max(self.percentOutside,(((self.bottom-candle.low)/self.bottom)).price)
@@ -224,6 +227,7 @@ class GapBelowFill:
         self.entryDate = entryPrice.date
         self.latestDate = entryPrice.date
         self.highestPercentFilled = 0
+        self.farthestPrice = top
     
     def updateFill(self,candle):
         self.latestDate = candle.date
@@ -233,6 +237,7 @@ class GapBelowFill:
         
         self.highestPercentFilled = self.percentFilled/self.totalFillPercent
         self.highestPercentFilled = min(self.highestPercentFilled,1)
+        self.farthestPrice = min(self.farthestPrice,candle.low)
 
         if candle.close < self.top: 
             self.daysInside = self.daysInside+1

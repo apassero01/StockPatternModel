@@ -79,7 +79,7 @@ class CreateDataSet:
         '''
 
         self.readData()
-        for ticker in tickers[0:100]:
+        for ticker in tickers[0:500]:
             if ticker in self.AllPriceData.keys():
                 continue 
             else:

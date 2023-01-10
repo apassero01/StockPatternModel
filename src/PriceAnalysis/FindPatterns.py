@@ -11,7 +11,7 @@ class FindPatterns:
 
     #SwingChange is the percent range away from the current price that a previous high or low is considered a relitive high or low
     SWINGCHANGE = .07
-    GAPSIZEPERCENT = .07 
+    GAPSIZEPERCENT = .05
 
 
 
@@ -136,7 +136,8 @@ class FindPatterns:
         
     
     def returnStock(self):
-        self.curStock.levels = self.currentLevels
+        # self.curStock.levels = self.currentLevels
+        self.curStock.gapContainer = self.gapContainer
         return self.curStock
         
 

@@ -26,6 +26,7 @@ class StockObject:
     def __init__(self, ticker):
         self.ticker = ticker
         self.dataGrab = importdata.DataGrab(ticker)
+        self.gapContainer = None
         
     
     '''

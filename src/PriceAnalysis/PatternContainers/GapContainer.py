@@ -50,6 +50,7 @@ class GapContainer:
             self.closestAbove.updateGap(candle)
             self.minPrice = min(self.minPrice,candle.low)
             if self.closestAbove.newFill: 
+                #If a new gapFIll instance, the latest fill in each gap must be updated with the latest price (Farthest price away from last fill)
                 for i in range(0,len(self.gapsAbove)):
                     if len(self.gapsAbove[i].fillInstances) > 0: 
                         self.gapsAbove[i].setNewMin(self.minPrice)
@@ -66,6 +67,7 @@ class GapContainer:
             self.closestBelow = self.gapsBelow[0]
             self.closestBelow.updateGap(candle)
             if self.closestBelow.newFill:
+                #If a new gapFIll instance, the latest fill in each gap must be updated with the latest price (Farthest price away from last fill)
                 for i in range(0,len(self.gapsBelow)):
                     if len(self.gapsBelow[i].fillInstances) > 0:
                         self.gapsBelow[i].setNewMax(self.maxPrice)
