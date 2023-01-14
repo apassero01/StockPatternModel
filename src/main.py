@@ -36,16 +36,16 @@ def main():
 
     organizer.saveToExcel()
 
-    fig = px.scatter_3d(gapDictionary,x = 'GapHighs',y = 'LowAfterExit',z = 'RiskReward')
-    fig.update_layout(
-    scene = dict(
-        xaxis = dict(nticks=4, range=[0,100],),
-                     yaxis = dict(nticks=4, range=[0,100],),
-                     zaxis = dict(nticks=4, range=[-5,5],),),
-    width=700,
-    margin=dict(r=20, l=10, b=10, t=10))
+    # fig = px.scatter_3d(gapDictionary,x = 'GapHighs',y = 'LowAfterExit',z = 'RiskReward')
+    # fig.update_layout(
+    # scene = dict(
+    #     xaxis = dict(nticks=4, range=[0,100],),
+    #                  yaxis = dict(nticks=4, range=[0,100],),
+    #                  zaxis = dict(nticks=4, range=[-5,5],),),
+    # width=700,
+    # margin=dict(r=20, l=10, b=10, t=10))
 
-    fig.show()
+    # fig.show()
 
 
     importDataObject.writeData(stockDict)
@@ -73,8 +73,6 @@ def analyzeStocks(stockDict):
     
     stockDictCopy = stockDict.copy()
     for stock in stockDict.keys():
-        # if stock == "CME":
-        #     print("CME")
         # if not stockDict.get(stock).gapContainer == None:
         #     continue
         patternFinder = Patterns.FindPatterns(stockDict.get(stock))
@@ -88,8 +86,8 @@ def analyzeStocks(stockDict):
 main() 
 
 def gapTest(): 
-    testStock = Stock.StockObject("LUMN")
-    # testStock.initializeDataInRange('2021-01-26','2021-07-01')
+    testStock = Stock.StockObject("CLF")
+    # testStock.initializeDataInRange('2018-01-20','2022-12-25')
     testStock.initializeData('2000-01-01')
     PatternFinder = Patterns.FindPatterns(testStock)
     PatternFinder.analyzePriceData()
@@ -100,15 +98,15 @@ def gapTest():
     organizer.organizeData()
     organizer.saveToExcel()
 
-    # print(PatternFinder.gapContainer.archivedGaps)
+    print(PatternFinder.gapContainer.archivedGaps)
     # print(organizer.stopLossDictionary)
 
     gapDictionary = organizer.aboveStopLossDictionary
 
     
 
-    fig = px.scatter_3d(gapDictionary,x = 'GapHighs',y = 'LowAfterExit',z = 'RiskReward')
-    fig.show()
+    # fig = px.scatter_3d(gapDictionary,x = 'GapHighs',y = 'LowAfterExit',z = 'RiskReward')
+    # fig.show()
     
 
 

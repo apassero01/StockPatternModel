@@ -1,6 +1,7 @@
 import PriceAnalysis.Patterns.Patterns as Patterns
 import PriceAnalysis.PatternContainers.GapContainer as gapContainer
 import pandas as pd 
+from datetime import datetime
 
 
 class FindPatterns:
@@ -61,6 +62,7 @@ class FindPatterns:
             periodClose = Patterns.Price(periodClose,date)
 
             candle = Patterns.Candle(periodOpen,periodClose,periodHigh,periodLow,date)
+
 
             if not prevPeriod.empty:
                 self.checkForGap(periodOpen,Patterns.Price(prevPeriod["Close"],prevPeriod.name))

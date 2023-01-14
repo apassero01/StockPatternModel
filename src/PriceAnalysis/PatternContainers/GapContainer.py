@@ -30,7 +30,7 @@ class GapContainer:
         gap = None; 
         if percentChange > 0: 
             gap = GapBelow(periodOpen,prevClose)
-            bisect.insort(self.gapsBelow,gap)
+            self.gapsBelow = [gap] + self.gapsBelow
         else: 
             gap = GapAbove(prevClose,periodOpen)
             bisect.insort(self.gapsAbove,gap)
