@@ -12,19 +12,22 @@ class GapDataOrganizer:
         self.aboveStopLossDictionary = {
             "GapHighs":[],
             "LowAfterExit":[],
-            "RiskReward":[] 
+            "RiskReward":[],
+            "PercentFillOnEntry":[]
         }
 
         self.belowStopLossDictionary = {
             "GapHighs":[],
             "LowAfterExit":[],
-            "RiskReward":[] 
+            "RiskReward":[], 
+            "PercentFillOnEntry":[]
         }
 
         self.memo = []
         self.gapHighs = [] 
         self.gapLows = []
         self.riskReward = [] 
+        self.percentFillOnEntry = []
     
 
     def organizeData(self): 
@@ -48,6 +51,7 @@ class GapDataOrganizer:
             self.gapHighs = [] 
             self.gapLows = [] 
             self.riskReward = []
+            self.percentFillOnEntry = [] 
 
             fillInstances = gap.fillInstances
             if not gap.below: 
@@ -55,11 +59,13 @@ class GapDataOrganizer:
                 self.aboveStopLossDictionary["GapHighs"] += self.gapHighs
                 self.aboveStopLossDictionary["LowAfterExit"] += self.gapLows
                 self.aboveStopLossDictionary["RiskReward"] += self.riskReward
+                self.aboveStopLossDictionary["PercentFillOnEntry"] += self.percentFillOnEntry
             else: 
                 self.stopLossFillBelow(0,len(fillInstances),gap,fillInstances)
                 self.belowStopLossDictionary["GapHighs"] += self.gapHighs
                 self.belowStopLossDictionary["LowAfterExit"] += self.gapLows
                 self.belowStopLossDictionary["RiskReward"] += self.riskReward
+                self.belowStopLossDictionary["PercentFillOnEntry"] += self.percentFillOnEntry
 
             
 
@@ -77,10 +83,12 @@ class GapDataOrganizer:
         
         self.memo.append((start,end))
         minVal = gap.top
+
+        self.percentFillOnEntry.append(fillInstances[start].percentFilledOnEntry)
         for index in range(start,end): 
             minVal = min(minVal,fillInstances[index].minAfterExit)
         
-        reward = fillInstances[end-1].farthestPrice - fillInstances[start].farthestPrice 
+        reward = fillInstances[end-1].farthestPrice - fillInstances[start].entryPrice 
         risk = gap.bottom - minVal
         self.riskReward.append((reward/risk).price)
         self.gapHighs.append(fillInstances[start].highestPercentFilled*100)
@@ -104,10 +112,12 @@ class GapDataOrganizer:
         
         self.memo.append((start,end))
         maxVal = gap.bottom
+
+        self.percentFillOnEntry.append(fillInstances[start].percentFilledOnEntry)
         for index in range(start,end): 
             maxVal = max(maxVal,fillInstances[index].maxAfterExit)
         
-        reward = fillInstances[end-1].farthestPrice - fillInstances[start].farthestPrice 
+        reward = fillInstances[end-1].farthestPrice - fillInstances[start].entryPrice 
         risk = maxVal - gap.top
         self.riskReward.append((reward/risk).price)
         self.gapHighs.append(fillInstances[start].highestPercentFilled*100)

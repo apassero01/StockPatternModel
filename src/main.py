@@ -87,7 +87,7 @@ main()
 
 def gapTest(): 
     testStock = Stock.StockObject("CLF")
-    # testStock.initializeDataInRange('2018-01-20','2022-12-25')
+    # testStock.initializeDataInRange('2020-03-16','2020-04-13')
     testStock.initializeData('2000-01-01')
     PatternFinder = Patterns.FindPatterns(testStock)
     PatternFinder.analyzePriceData()
@@ -96,10 +96,9 @@ def gapTest():
     organizer = GapDataOrganizer.GapDataOrganizer(stockDictionary)
 
     organizer.organizeData()
-    organizer.saveToExcel()
 
     print(PatternFinder.gapContainer.archivedGaps)
-    # print(organizer.stopLossDictionary)
+    print(organizer.aboveStopLossDictionary)
 
     gapDictionary = organizer.aboveStopLossDictionary
 
