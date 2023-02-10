@@ -23,16 +23,21 @@ def main():
 
     stockDict = importDataObject.returnData()
 
+    # for key in stockDict: 
+    #     print(stockDict[key].gapContainer.archivedGaps)
+
     stockDict = analyzeStocks(stockDict)
 
     organizer = GapDataOrganizer.GapDataOrganizer(stockDict)
 
     organizer.organizeData()
 
-    # print(PatternFinder.gapContainer.archivedGaps)
+
     # print(organizer.stopLossDictionary)
 
     gapDictionary = organizer.aboveStopLossDictionary
+
+    organizer.aggregateBins(2.5,organizer.aggregateByPL)
 
     organizer.saveToExcel()
 
@@ -73,10 +78,12 @@ def analyzeStocks(stockDict):
     
     stockDictCopy = stockDict.copy()
     for stock in stockDict.keys():
-        # if not stockDict.get(stock).gapContainer == None:
-        #     continue
+        if not stockDict.get(stock).gapContainer == None:
+            continue
         patternFinder = Patterns.FindPatterns(stockDict.get(stock))
+        
         patternFinder.analyzePriceData()
+        
         stockDictCopy[stock] = patternFinder.returnStock()
         print(stock)
 
@@ -86,19 +93,24 @@ def analyzeStocks(stockDict):
 main() 
 
 def gapTest(): 
-    testStock = Stock.StockObject("CLF")
-    # testStock.initializeDataInRange('2020-03-16','2020-04-13')
-    testStock.initializeData('2000-01-01')
+    testStock = Stock.StockObject("LUMN")
+    testStock.initializeDataInRange('2019-03-16','2023-04-13')
+    # testStock.initializeData('2000-01-01')
     PatternFinder = Patterns.FindPatterns(testStock)
-    PatternFinder.analyzePriceData()
+    PatternFinder.analyzePriceData() 
     stockDictionary = {"LUMN": PatternFinder.returnStock()}
 
     organizer = GapDataOrganizer.GapDataOrganizer(stockDictionary)
 
     organizer.organizeData()
+    organizer.aggregateBins(2.5)
+    organizer.saveToExcel()
+    # print(organizer.aboveStopLossDictionary)
+
+    # print(organizer.aggregateBinsAbove)
 
     print(PatternFinder.gapContainer.archivedGaps)
-    print(organizer.aboveStopLossDictionary)
+    # print(organizer.aboveStopLossDictionary)
 
     gapDictionary = organizer.aboveStopLossDictionary
 
