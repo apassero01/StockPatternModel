@@ -3,6 +3,7 @@ import DataCollection.Stock as Stock
 import DataCollection.ImportData as ImportData
 import PriceAnalysis.FindPatterns as Patterns
 import StatisticalAnalysis.DataOrganize.GapDataOrganizer as GapDataOrganizer
+import StatisticalAnalysis.DataOrganize.GapDataOrganize2 as GapDataOrganizer2
 import app
 import plotly.express as px
 import plotly.graph_objects as go
@@ -28,18 +29,25 @@ def main():
 
     stockDict = analyzeStocks(stockDict)
 
-    organizer = GapDataOrganizer.GapDataOrganizer(stockDict)
+    importDataObject.writeData(stockDict)
+
+    organizer = GapDataOrganizer2.GapDataOrganizer(stockDict)
 
     organizer.organizeData()
+    organizer.aggregateBins(2.5) 
+    organizer.saveToExcel() 
+
+    print(organizer.gapAbovePositions)
+    print(organizer.avgCutOff/organizer.total)
 
 
     # print(organizer.stopLossDictionary)
 
-    gapDictionary = organizer.aboveStopLossDictionary
+    # gapDictionary = organizer.aboveStopLossDictionary
 
-    organizer.aggregateBins(2.5,organizer.aggregateByPL)
+    # organizer.aggregateBins(2.5,organizer.aggregateByPL)
 
-    organizer.saveToExcel()
+    # organizer.saveToExcel()
 
     # fig = px.scatter_3d(gapDictionary,x = 'GapHighs',y = 'LowAfterExit',z = 'RiskReward')
     # fig.update_layout(
@@ -53,7 +61,7 @@ def main():
     # fig.show()
 
 
-    importDataObject.writeData(stockDict)
+    # importDataObject.writeData(stockDict)
 
     # app.createApp(stockDict)
 
@@ -78,8 +86,8 @@ def analyzeStocks(stockDict):
     
     stockDictCopy = stockDict.copy()
     for stock in stockDict.keys():
-        if not stockDict.get(stock).gapContainer == None:
-            continue
+        # if not stockDict.get(stock).gapContainer == None:
+        #     continue
         patternFinder = Patterns.FindPatterns(stockDict.get(stock))
         
         patternFinder.analyzePriceData()
@@ -90,29 +98,36 @@ def analyzeStocks(stockDict):
 
     return stockDictCopy
 
-main() 
+# main() 
 
 def gapTest(): 
     testStock = Stock.StockObject("LUMN")
-    testStock.initializeDataInRange('2019-03-16','2023-04-13')
+    testStock.initializeDataInRange('2015-06-20','2023-07-10')
     # testStock.initializeData('2000-01-01')
     PatternFinder = Patterns.FindPatterns(testStock)
     PatternFinder.analyzePriceData() 
     stockDictionary = {"LUMN": PatternFinder.returnStock()}
 
-    organizer = GapDataOrganizer.GapDataOrganizer(stockDictionary)
+    print(stockDictionary['LUMN'].gapContainer.archivedGaps)
+    organizer = GapDataOrganizer2.GapDataOrganizer(stockDictionary)
 
     organizer.organizeData()
-    organizer.aggregateBins(2.5)
-    organizer.saveToExcel()
+    # organizer.aggregateBins(2.5) 
+    # organizer.saveToExcel() 
+
+
+    
+    # organizer.aggregateBins(2.5)
+    # organizer.saveToExcel()
     # print(organizer.aboveStopLossDictionary)
 
     # print(organizer.aggregateBinsAbove)
 
-    print(PatternFinder.gapContainer.archivedGaps)
+    print(organizer.gapAbovePositions)
     # print(organizer.aboveStopLossDictionary)
 
-    gapDictionary = organizer.aboveStopLossDictionary
+
+    # gapDictionary = organizer.aboveStopLossDictionary
 
     
 
@@ -121,4 +136,4 @@ def gapTest():
     
 
 
-# gapTest()
+gapTest()

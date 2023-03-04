@@ -118,7 +118,7 @@ class GapBelow:
             
             self.currentFill.updateFill(candle) 
 
-            if self.currentFill.percentFilled > self.totalFillPercent*.75: 
+            if self.currentFill.percentFilled > self.totalFillPercent: 
                 self.filled = True
                 self.fillInstances.append(self.currentFill)
                 if self.currentFill.daysInside == 1: 
@@ -202,6 +202,8 @@ class GapAboveFill:
         self.farthestPrice = bottom
         self.entryPrice = entryPrice 
         self.percentFilledOnEntry = (((entryPrice-self.bottom)/self.bottom)).price/totalFillPercent
+
+        self.minPrice = entryPrice
     
 
     def updateFill(self,candle):
@@ -214,10 +216,15 @@ class GapAboveFill:
         self.highestPercentFilled = min(self.highestPercentFilled,1)
         self.farthestPrice = max(self.farthestPrice,candle.high)
         
+
+
+
         if (self.farthestPrice > self.top):
             self.farthestPrice = self.top
 
         if candle.close > self.bottom: 
+            if self.daysInside > 0: 
+                self.minPrice = min(self.minPrice,candle.low)
             self.daysInside = self.daysInside+1
             self.percentOutside = max(self.percentOutside,(((self.bottom-candle.low)/self.bottom)).price)
         else: 
@@ -263,6 +270,8 @@ class GapBelowFill:
         self.farthestPrice = top
         self.entryPrice = entryPrice
         self.percentFilledOnEntry = (((self.top-entryPrice)/self.top)).price/totalFillPercent
+
+        self.minPrice = entryPrice
     
     def updateFill(self,candle):
         self.latestDate = candle.date
@@ -278,6 +287,8 @@ class GapBelowFill:
             self.farthestPrice = self.bottom
 
         if candle.close < self.top: 
+            if self.daysInside > 0: 
+                self.minPrice = min(self.minPrice,candle.low)
             self.daysInside = self.daysInside+1
             self.activeAtRisk = False
         else: 
