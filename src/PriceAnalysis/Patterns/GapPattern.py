@@ -217,14 +217,13 @@ class GapAboveFill:
         self.farthestPrice = max(self.farthestPrice,candle.high)
         
 
-
+        if self.daysInside > 0: 
+            self.minPrice = min(self.minPrice,candle.low)
 
         if (self.farthestPrice > self.top):
             self.farthestPrice = self.top
 
         if candle.close > self.bottom: 
-            if self.daysInside > 0: 
-                self.minPrice = min(self.minPrice,candle.low)
             self.daysInside = self.daysInside+1
             self.percentOutside = max(self.percentOutside,(((self.bottom-candle.low)/self.bottom)).price)
         else: 

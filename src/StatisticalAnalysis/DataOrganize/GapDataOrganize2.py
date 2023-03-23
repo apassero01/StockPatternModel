@@ -1,5 +1,7 @@
 import pandas as pd 
 import numpy as np 
+import statistics
+import PriceAnalysis.Patterns.Patterns as patterns
 
 
 
@@ -17,7 +19,7 @@ class GapDataOrganizer:
         self.aggregateBinsBelow = dict() 
 
         self.avgCutOff = 0
-        self.total = 0; 
+        self.total = 0
 
     
     def organizeData(self):
@@ -34,38 +36,62 @@ class GapDataOrganizer:
                     if not abovePosition.validPosition: 
                         continue
                     self.gapAbovePositions.append(abovePosition)
+
     
 
     def aggregateBins(self,step):
-        for i in np.arange(step,300+step,step):
-            self.aggregateBinsAbove[i] = 0
-            self.aggregateBinsBelow[i] = 0 
+        binSize = 150
+        for i in np.arange(step,binSize+step,step):
+            self.aggregateBinsAbove[i] = (0,0,0)
+            self.aggregateBinsBelow[i] = (0,0,0)
         
-        for position in self.gapAbovePositions: 
+        for i in range(len(self.gapAbovePositions)):
+            position = self.gapAbovePositions[i]
             percentReward = position.percentReward
-            percentRisk = position.percentRisk 
-            rewardCutOff = position.rewardCutOff 
             neverFilled = False 
 
-            if rewardCutOff > 0: 
-                self.avgCutOff += rewardCutOff
-                self.total += 1; 
 
             if (percentReward == 0): 
                 neverFilled = True 
             
-            for bin in self.aggregateBinsAbove: 
-                if neverFilled or bin/100 < rewardCutOff: 
-                    loss = bin/100*position.size * self.TEST_POSITION_SIZE
-                    self.aggregateBinsAbove[bin] -= loss
+
+            lastBin = 0 
+            for ranges in position.cutOffRanges: 
+                timesStoppedOut = 0 
+                for cutOff in position.orderedCutOffs: 
+                    if cutOff >= ranges[1]: 
+                        timesStoppedOut += 1
+                
+                for bin in self.aggregateBinsAbove: 
+                    if bin/100 > ranges[1]:
+                        timesStoppedOut = 0
+                        lastBin = bin 
+                        break
+                    if bin < lastBin:
+                        continue
                     
-                if bin/100 >= rewardCutOff: 
-                    profit = percentReward * self.TEST_POSITION_SIZE
-                    self.aggregateBinsAbove[bin] += profit 
+                    if bin/100 * position.size < .02: 
+                        loss = .02 * self.TEST_POSITION_SIZE * timesStoppedOut
+                    else: 
+                        loss = bin/100 * position.size * self.TEST_POSITION_SIZE * timesStoppedOut
+                    oldVal = self.aggregateBinsAbove[bin]
+                    self.aggregateBinsAbove[bin] = (oldVal[0]-loss,oldVal[1]+timesStoppedOut,oldVal[2])
+
+                    # if not neverFilled: 
+                    #     profit = percentReward * self.TEST_POSITION_SIZE
+                    #     oldVal = self.aggregateBinsAbove[bin]
+                    #     self.aggregateBinsAbove[bin] = (oldVal[0]+profit,oldVal[1],oldVal[2]+1)
+                if bin == binSize: 
+                    break
+
+            for bin in self.aggregateBinsAbove:
+                profit = percentReward * self.TEST_POSITION_SIZE
+                oldVal = self.aggregateBinsAbove[bin]
+                self.aggregateBinsAbove[bin] = (oldVal[0]+profit,oldVal[1],oldVal[2]+1)
 
 
     def saveToExcel(self):
-        dataFrameAbove = pd.DataFrame(self.aggregateBinsAbove,index = [1])
+        dataFrameAbove = pd.DataFrame(self.aggregateBinsAbove)
         dataFrameAbove = dataFrameAbove.T
         dataFrameAbove.to_excel('SavedData/AggregateDataAbove.xlsx')      
                     
@@ -90,13 +116,15 @@ class GapAbovePosition:
         self.orderedCutOffs = [] 
         self.cutOffRanges = [] 
         self.fillsToTarget = 0 
+
+        self.avgEntryPrice = 0
  
             
         if len(self.fillInstances) != 0:
             self.initialFill = self.fillInstances[0]
             entryPrice = self.initialFill.entryPrice
 
-            self.allEntryPrices.append(entryPrice)
+            self.allEntryPrices.append(entryPrice.price)
 
             self.percentFilledOnEntry = self.initialFill.percentFilledOnEntry
             self.initialHighestPercentFilled = self.initialFill.highestPercentFilled 
@@ -106,6 +134,7 @@ class GapAbovePosition:
 
             #Reversing the percent change equation to solve for final price knowing our percentGainTarget, we fer price target
             self.priceTarget = (self.gapAbove.bottom.price*self.percentGainTarget) + self.gapAbove.bottom.price
+
 
             self.validPosition = True 
         else: 
@@ -123,8 +152,9 @@ class GapAbovePosition:
         if self.initialHighestPercentFilled > self.PERCENT_FILL_TARGET: 
             minimum = self.initialFill.minPrice
             
-            # self.percentReward = (self.priceTarget - self.entryPrice.price)/self.entryPrice.price
-            self.percentRisk = ((self.gapAbove.bottom - minimum)/self.gapAbove.bottom).price 
+            entryPrice = self.allEntryPrices[0]
+            self.percentReward = (self.priceTarget - entryPrice)/entryPrice
+            self.percentRisk = ((patterns.Price(entryPrice) - minimum)/patterns.Price(entryPrice)).price 
             rewardCutOff = round(self.percentRisk/self.gapAbove.totalFillPercent,2) 
 
             rewardCutOff = max(0,rewardCutOff)
@@ -170,16 +200,19 @@ class GapAbovePosition:
 
                     curMin = min(curMin,fill.minPrice)
 
-                    self.percentRisk = ((self.gapAbove.bottom - curMin)/self.gapAbove.bottom).price 
+                    prevEntry = patterns.Price(self.allEntryPrices[len(self.allEntryPrices)-1])
+                    self.percentRisk = ((prevEntry - curMin)/prevEntry).price 
                     rewardCutOff = round(self.percentRisk/self.gapAbove.totalFillPercent,2)
 
                     self.orderedCutOffs += [rewardCutOff]
-                    self.allEntryPrices.append(fill.entryPrice)
+                    self.allEntryPrices.append(fill.entryPrice.price)
 
 
 
                     if highestPercentFilled > self.PERCENT_FILL_TARGET: 
-                        # self.percentReward = (self.priceTarget - self.entryPrice.price)/self.entryPrice.price
+                        
+                        self.avgEntryPrice = statistics.mean(self.allEntryPrices)
+                        self.percentReward = (self.priceTarget - self.avgEntryPrice)/self.avgEntryPrice
                         self.targetHit = True
                         self.fillsToTarget = index + 1  
                         break 

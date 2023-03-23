@@ -48,7 +48,7 @@ class CreateDataSet:
 
     def __init__(self):
         self.AllPriceData = { }
-        self.startDate = '2001-01-01'
+        self.startDate = '2016-01-01'
         
     
     def writeData(self,stockDict):
@@ -79,7 +79,7 @@ class CreateDataSet:
         '''
 
         self.readData()
-        for ticker in tickers[0:500]:
+        for ticker in tickers:
             if ticker in self.AllPriceData.keys():
                 continue 
             else:
@@ -113,14 +113,14 @@ class CreateDataSet:
         Generates a list of tickers from the S&P500, NASDAQ and DOW
         '''
         spticks = pd.DataFrame( si.tickers_sp500() )
-        # nasticks = pd.DataFrame( si.tickers_nasdaq() )
-        # dowticks = pd.DataFrame( si.tickers_dow() )
+        nasticks = pd.DataFrame( si.tickers_nasdaq() )
+        dowticks = pd.DataFrame( si.tickers_dow() )
 
         spticks = spticks[0].values.tolist()
-        # nasticks = nasticks[0].values.tolist()
-        # dowticks = dowticks[0].values.tolist()
+        nasticks = nasticks[0].values.tolist()
+        dowticks = dowticks[0].values.tolist()
 
-        allTickers = spticks
+        allTickers = spticks + nasticks + dowticks
         return allTickers
 
     def clearBadTicks(self): 

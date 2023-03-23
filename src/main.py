@@ -27,18 +27,19 @@ def main():
     # for key in stockDict: 
     #     print(stockDict[key].gapContainer.archivedGaps)
 
-    stockDict = analyzeStocks(stockDict)
+    startDate = '2018-01-01'
+
+    stockDict = analyzeStocks(stockDict,startDate)
 
     importDataObject.writeData(stockDict)
 
     organizer = GapDataOrganizer2.GapDataOrganizer(stockDict)
 
     organizer.organizeData()
-    organizer.aggregateBins(2.5) 
+    organizer.aggregateBins(5) 
     organizer.saveToExcel() 
 
     print(organizer.gapAbovePositions)
-    print(organizer.avgCutOff/organizer.total)
 
 
     # print(organizer.stopLossDictionary)
@@ -82,15 +83,15 @@ This will loop through every stock in the data set and analyze the price data.
 At this point it only generate support and resistance, the basis of all chart patterns
 This process is EXTREMELY slow but only needs to be done once.
 '''
-def analyzeStocks(stockDict):
+def analyzeStocks(stockDict,startDate):
     
     stockDictCopy = stockDict.copy()
     for stock in stockDict.keys():
-        # if not stockDict.get(stock).gapContainer == None:
-        #     continue
+        if not stockDict.get(stock).gapContainer == None:
+            continue
         patternFinder = Patterns.FindPatterns(stockDict.get(stock))
         
-        patternFinder.analyzePriceData()
+        patternFinder.analyzePriceData(startDate)
         
         stockDictCopy[stock] = patternFinder.returnStock()
         print(stock)
@@ -98,22 +99,23 @@ def analyzeStocks(stockDict):
 
     return stockDictCopy
 
-# main() 
+main() 
 
 def gapTest(): 
+    startDate = '2020-03-05'
     testStock = Stock.StockObject("LUMN")
-    testStock.initializeDataInRange('2015-06-20','2023-07-10')
+    testStock.initializeDataInRange(startDate,'2021-01-27')
     # testStock.initializeData('2000-01-01')
     PatternFinder = Patterns.FindPatterns(testStock)
-    PatternFinder.analyzePriceData() 
+    PatternFinder.analyzePriceData('2020-03-05') 
     stockDictionary = {"LUMN": PatternFinder.returnStock()}
 
     print(stockDictionary['LUMN'].gapContainer.archivedGaps)
     organizer = GapDataOrganizer2.GapDataOrganizer(stockDictionary)
 
     organizer.organizeData()
-    # organizer.aggregateBins(2.5) 
-    # organizer.saveToExcel() 
+    organizer.aggregateBins(5) 
+    organizer.saveToExcel() 
 
 
     
@@ -136,4 +138,4 @@ def gapTest():
     
 
 
-gapTest()
+# gapTest()

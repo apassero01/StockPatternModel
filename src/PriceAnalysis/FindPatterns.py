@@ -34,7 +34,7 @@ class FindPatterns:
 
     
 
-    def analyzePriceData(self):
+    def analyzePriceData(self,startDate):
         '''
         Method to loop over a stocks panda dataset containing relavent price data checking for patterns. 
         '''
@@ -45,7 +45,7 @@ class FindPatterns:
 
         prevPeriod = pd.DataFrame() 
 
-        for index, period in self.priceData.iterrows(): 
+        for index, period in self.priceData[startDate:].iterrows(): 
             
             periodHigh = period["High"]
             periodLow = period["Low"]
