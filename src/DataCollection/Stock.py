@@ -27,6 +27,7 @@ class StockObject:
         self.ticker = ticker
         self.dataGrab = importdata.DataGrab(ticker)
         self.gapContainer = None
+        self.valid = True
         
     
     '''

@@ -25,7 +25,7 @@ class GapAbove:
     for a maximum of one day. 
     '''
     def updateGap(self,candle): 
-        if candle.close > self.bottom:
+        if (((candle.close - self.bottom)/self.bottom).price)/self.totalFillPercent > .01:
             self.inside = True
             if self.currentFill == None: 
                 self.currentFill = GapAboveFill(candle.close,self.totalFillPercent,self.top,self.bottom)

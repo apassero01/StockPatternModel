@@ -52,7 +52,8 @@ class GapDataOrganizer:
 
 
             if (percentReward == 0): 
-                neverFilled = True 
+                neverFilled = True
+                continue 
             
 
             lastBin = 0 
@@ -70,8 +71,8 @@ class GapDataOrganizer:
                     if bin < lastBin:
                         continue
                     
-                    if bin/100 * position.size < .02: 
-                        loss = .02 * self.TEST_POSITION_SIZE * timesStoppedOut
+                    if bin/100 * position.size < .005: 
+                        loss = .005 * self.TEST_POSITION_SIZE * timesStoppedOut
                     else: 
                         loss = bin/100 * position.size * self.TEST_POSITION_SIZE * timesStoppedOut
                     oldVal = self.aggregateBinsAbove[bin]
@@ -104,7 +105,7 @@ class GapAbovePosition:
     '''
 
     PERCENT_FILL_TARGET = .75
-    INITIAL_FILL_ENTRY_THRESH = .2
+    INITIAL_FILL_ENTRY_THRESH = .3
 
     def __init__(self, gapAbove,ticker): 
         self.ticker = ticker 

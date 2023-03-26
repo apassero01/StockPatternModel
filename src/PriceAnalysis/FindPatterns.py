@@ -12,7 +12,9 @@ class FindPatterns:
 
     #SwingChange is the percent range away from the current price that a previous high or low is considered a relitive high or low
     SWINGCHANGE = .07
-    GAPSIZEPERCENT = .05
+    GAPSIZEPERCENT = .1
+
+    VOLUME_SIZE = 200000
 
 
 
@@ -51,9 +53,12 @@ class FindPatterns:
             periodLow = period["Low"]
             periodOpen = period["Open"]
             periodClose = period["Close"]
+            volume = period["Volume"]
             date = period.name
 
-            
+            if volume < self.VOLUME_SIZE: 
+                self.curStock.valid = False
+                break 
         
 
             periodHigh = Patterns.Price(periodHigh,date)

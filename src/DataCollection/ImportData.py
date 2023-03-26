@@ -113,14 +113,14 @@ class CreateDataSet:
         Generates a list of tickers from the S&P500, NASDAQ and DOW
         '''
         spticks = pd.DataFrame( si.tickers_sp500() )
-        nasticks = pd.DataFrame( si.tickers_nasdaq() )
+        # nasticks = pd.DataFrame( si.tickers_nasdaq() )
         dowticks = pd.DataFrame( si.tickers_dow() )
 
         spticks = spticks[0].values.tolist()
-        nasticks = nasticks[0].values.tolist()
+        # nasticks = nasticks[0].values.tolist()
         dowticks = dowticks[0].values.tolist()
 
-        allTickers = spticks + nasticks + dowticks
+        allTickers = spticks + dowticks
         return allTickers
 
     def clearBadTicks(self): 
@@ -137,6 +137,8 @@ class CreateDataSet:
 
         for ticker in tickersToClear: 
             del self.AllPriceData[ticker]
+        
+        
         
         self.writeData(self.AllPriceData)
 
